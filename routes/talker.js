@@ -19,13 +19,11 @@ talkerRouter.get('/talker/:id', async (req, res) => {
     const { id } = req.params;
     const talk = await readFile();
     const talkid = talk.find((talker) => talker.id === Number(id));
-    console.log(talkid);
     if (!talkid) {
     return res.status(404).json({ message: 'Pessoa palestrante não encontrada' }); 
 }
     return res.status(200).json(talkid);
 });
-
 talkerRouter.post('/talker',
 validateToken,
 validateName,
@@ -41,9 +39,27 @@ validateRate, async (req, res) => {
     age,
     talk,
 };
-talker.push(newtalkerObj);
-await writeFile(talker);
-console.log(talker);
+
+const newtalkers = [newtalkerObj, ...talker];
+await writeFile(newtalkers);
 res.status(201).json(newtalkerObj);
 });
+
+talkerRouter.put('/talker/:id',
+validateToken,
+validateName,
+validateAge,
+validateTalk,
+validateRate, async (req, res) => {
+    const { id } = req.params;
+    const { name, age, talk } = req.body;
+    const talkers = await readFile();
+    const talkid = talkers.findIndex((talker) => talker.id === Number(id));
+    talkers[talkid] = { ...talkers[talkid], name, age, talk };
+    console.log(talkers[talkid]);
+    await writeFile(talkers);
+
+    res.status(200).json(talkers[talkid]);
+});
+
 module.exports = talkerRouter;
