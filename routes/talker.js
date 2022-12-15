@@ -8,7 +8,18 @@ const { readFile, writeFile } = require('../utils');
 
 const talkerRouter = express.Router();
 
-// talkerRouter.get('/', (_req, res) => res.status(200).json('AQui'));
+talkerRouter.get('/talker/search',
+validateToken, 
+async (req, res) => {
+  const { q } = req.query;
+  const talkers = await readFile();
+  if (!q || q === '') {
+    return res.status(200).json(talkers);
+  }
+  const talkfilter = talkers.filter((t) => t.name.toLowerCase().includes(q.toLowerCase()));
+  console.log(talkfilter, 'aqui');
+  res.status(200).json(talkfilter);
+});
 
 talkerRouter.get('/talker', async (_req, res) => {
     const talkers = await readFile();
@@ -40,7 +51,7 @@ validateRate, async (req, res) => {
     talk,
 };
 
-const newtalkers = [newtalkerObj, ...talker];
+const newtalkers = [...talker, newtalkerObj];
 await writeFile(newtalkers);
 res.status(201).json(newtalkerObj);
 });
