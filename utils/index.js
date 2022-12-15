@@ -8,9 +8,14 @@ const readFile = async () => {
     return data;
 };
 
+const writeFile = async (content) => {
+     await fs.writeFile(PATH, JSON.stringify(content));
+};
+
 const geraToken = () => crypto.randomBytes(8).toString('hex');
 
 module.exports = {
     readFile,
     geraToken,
+    writeFile,
 };

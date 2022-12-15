@@ -1,5 +1,10 @@
 const express = require('express');
-const { readFile } = require('../utils');
+const { validateToken,
+    validateName,
+    validateAge,
+    validateTalk,
+    validateRate } = require('../middlewares/validateNewUser');
+const { readFile, writeFile } = require('../utils');
 
 const talkerRouter = express.Router();
 
@@ -19,5 +24,26 @@ talkerRouter.get('/talker/:id', async (req, res) => {
     return res.status(404).json({ message: 'Pessoa palestrante não encontrada' }); 
 }
     return res.status(200).json(talkid);
+});
+
+talkerRouter.post('/talker',
+validateToken,
+validateName,
+validateAge,
+validateTalk,
+validateRate, async (req, res) => {
+  const { name, age, talk } = req.body;
+  const talker = await readFile();
+  const newid = talker.length + 1;
+  const newtalkerObj = {
+    id: newid,
+    name,
+    age,
+    talk,
+};
+talker.push(newtalkerObj);
+await writeFile(talker);
+console.log(talker);
+res.status(201).json(newtalkerObj);
 });
 module.exports = talkerRouter;
