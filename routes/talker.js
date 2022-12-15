@@ -62,4 +62,15 @@ validateRate, async (req, res) => {
     res.status(200).json(talkers[talkid]);
 });
 
+talkerRouter.delete('/talker/:id',
+validateToken,
+ async (req, res) => {
+    const { id } = req.params;
+    const talkers = await readFile();
+    const talkid = talkers.findIndex((talker) => talker.id === Number(id));
+    talkers.splice(talkid, 1);
+    await writeFile(talkers);
+    res.status(204).end();
+});
+
 module.exports = talkerRouter;
